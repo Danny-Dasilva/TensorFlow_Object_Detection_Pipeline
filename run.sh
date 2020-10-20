@@ -11,6 +11,30 @@ python3 generate_tfrecord.py --csv_input=images/test_labels.csv --image_dir=imag
 
 
 
+
+python3 generate_tfrecord_15.py --csv_input=images/test_labels.csv --image_dir=images/test --output_path=test.record
+
+
+
+python3 generate_tfrecord_15.py --csv_input=images/train_labels.csv --image_dir=images/train --output_path=train.record
+
+
+
+
+
+
+
+
+
+
+
+python generate_tfrecord_2.0.py -x images/train -l training/labelmap.pbtxt -o test.train
+
+python generate_tfrecord_2.0.py -x images/test -l training/labelmap.pbtxt -o test.record
+
+
+
+
 python3 model_main.py \
   --pipeline_config_path=training/pipeline.config \
   --model_dir=training/ \

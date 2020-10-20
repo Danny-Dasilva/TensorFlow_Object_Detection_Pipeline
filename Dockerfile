@@ -36,16 +36,11 @@ RUN apt-get update && apt-get upgrade -y \
  && /usr/local/bin/python-build -v $PYTHON_VERSION $PYTHON_ROOT \
  && rm -rf $PYENV_ROOT
 
-# # cudnn reinstall
-RUN apt remove --allow-change-held-packages -y libcudnn7 libcudnn7-dev
-RUN wget https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64/libcudnn7_7.5.0.56-1+cuda10.0_amd64.deb 
-RUN wget https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64/libcudnn7-dev_7.5.0.56-1+cuda10.0_amd64.deb 
-RUN dpkg -i libcudnn7_7.5.0.56-1+cuda10.0_amd64.deb
-RUN dpkg -i libcudnn7-dev_7.5.0.56-1+cuda10.0_amd64.deb
+
 
 # tensorflow and object detection api installation
 RUN apt-get install -y protobuf-compiler python-pil python-lxml python-tk python3-pip
-RUN python -m pip install --upgrade pip setuptools && pip3 install tensorflow-gpu==1.15
+RUN python -m pip install --upgrade pip setuptools && pip3 install tensorflow-gpu==1.15 scipy tf_slim
 # RUN pip3 install tensorflow-gpu==2.2.0
 RUN mkdir /protoc_3.3 && \
     cd protoc_3.3 && \
@@ -56,7 +51,7 @@ RUN mkdir /protoc_3.3 && \
 RUN pip3 install Cython contextlib2 pillow lxml matplotlib pandas numpy
 
 RUN git clone https://github.com/tensorflow/models.git
-Run git clone https://github.com/Danny-Dasilva/Obj_retrain.git
+Run git clone https://github.com/Danny-Dasilva/TensorFlow_Object_Detection_Pipeline.git
 
 RUN git clone https://github.com/cocodataset/cocoapi.git && \
     cd cocoapi/PythonAPI && \
@@ -71,23 +66,23 @@ ENV PYTHONPATH $PYTHONPATH:/models/research:/models/research/slim
 # CMD export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
 
 Run mkdir models/research/object_detection/training
-Run cp Obj_retrain/setup/pipeline.config models/research/object_detection/training
-Run cp Obj_retrain/setup/generate_labelmap.py models/research/object_detection
+Run cp TensorFlow_Object_Detection_Pipeline/setup/pipeline.config models/research/object_detection/training
+Run cp TensorFlow_Object_Detection_Pipeline/setup/generate_labelmap.py models/research/object_detection
 
-Run cp Obj_retrain/setup/generate_tfrecord.py models/research/object_detection/
-Run cp Obj_retrain/setup/xml_to_csv.py models/research/object_detection/
+Run cp TensorFlow_Object_Detection_Pipeline/setup/generate_tfrecord.py models/research/object_detection/
+Run cp TensorFlow_Object_Detection_Pipeline/setup/xml_to_csv.py models/research/object_detection/
 
 
-Run cp Obj_retrain/setup/export_tflite_ssd_graph.py models/research/object_detection/
-Run cp Obj_retrain/setup/constants.sh models/research/object_detection/
+Run cp TensorFlow_Object_Detection_Pipeline/setup/export_tflite_ssd_graph.py models/research/object_detection/
+Run cp TensorFlow_Object_Detection_Pipeline/setup/constants.sh models/research/object_detection/
 
-Run cp -r Obj_retrain/setup/ssd_mobilenet_v2_quantized_300x300 models/research/object_detection/
+Run cp -r TensorFlow_Object_Detection_Pipeline/setup/ssd_mobilenet_v2_quantized_300x300 models/research/object_detection/
 
 
 Run rm -rf models/research/pycocotools/cocoeval.py
 Run rm -rf models/research/object_detection/metrics/coco_tools.py
-Run cp Obj_retrain/setup/coco_tools.py models/research/object_detection/metrics/
-Run cp Obj_retrain/setup/cocoeval.py models/research/pycocotools/
+Run cp TensorFlow_Object_Detection_Pipeline/setup/coco_tools.py models/research/object_detection/metrics/
+Run cp TensorFlow_Object_Detection_Pipeline/setup/cocoeval.py models/research/pycocotools/
 
 # COPY utils/create_tf_record.py /models/research/object_detection/dataset_tools/ 
 # COPY utils/shell_script /models/reserach/.
@@ -103,5 +98,3 @@ RUN apt-get install -y edgetpu-compiler
 WORKDIR ${work_dir}
 
 
-# cp packages/tf2/setup.py .
-# python -m pip install .
