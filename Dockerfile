@@ -1,10 +1,10 @@
-FROM nvidia/cuda:10.1-cudnn7-devel
+FROM nvidia/cuda:10.0-cudnn7-devel
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 
 # python installation
-ENV PYTHON_VERSION 3.8.0
+ENV PYTHON_VERSION 3.7.9
 ENV HOME /root
 ENV PYTHON_ROOT $HOME/local/python-$PYTHON_VERSION
 ENV PATH $PYTHON_ROOT/bin:$PATH
@@ -37,23 +37,23 @@ RUN apt-get update && apt-get upgrade -y \
  && rm -rf $PYENV_ROOT
 
 # # cudnn reinstall
-# RUN apt remove --allow-change-held-packages -y libcudnn7 libcudnn7-dev
-# RUN wget https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64/libcudnn7_7.5.0.56-1+cuda10.0_amd64.deb 
-# RUN wget https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64/libcudnn7-dev_7.5.0.56-1+cuda10.0_amd64.deb 
-# RUN dpkg -i libcudnn7_7.5.0.56-1+cuda10.0_amd64.deb
-# RUN dpkg -i libcudnn7-dev_7.5.0.56-1+cuda10.0_amd64.deb
+RUN apt remove --allow-change-held-packages -y libcudnn7 libcudnn7-dev
+RUN wget https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64/libcudnn7_7.5.0.56-1+cuda10.0_amd64.deb 
+RUN wget https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64/libcudnn7-dev_7.5.0.56-1+cuda10.0_amd64.deb 
+RUN dpkg -i libcudnn7_7.5.0.56-1+cuda10.0_amd64.deb
+RUN dpkg -i libcudnn7-dev_7.5.0.56-1+cuda10.0_amd64.deb
 
 # tensorflow and object detection api installation
 RUN apt-get install -y protobuf-compiler python-pil python-lxml python-tk python3-pip
-
-RUN pip3 install tensorflow-gpu==2.2.0
+RUN python -m pip install --upgrade pip setuptools && pip3 install tensorflow-gpu==1.15
+# RUN pip3 install tensorflow-gpu==2.2.0
 RUN mkdir /protoc_3.3 && \
     cd protoc_3.3 && \
     wget https://github.com/google/protobuf/releases/download/v3.3.0/protoc-3.3.0-linux-x86_64.zip && \
     chmod 775 protoc-3.3.0-linux-x86_64.zip && \
     unzip protoc-3.3.0-linux-x86_64.zip
 
-RUN pip3 install Cython contextlib2 pillow lxml matplotlib pandas numpy==1.17 
+RUN pip3 install Cython contextlib2 pillow lxml matplotlib pandas numpy
 
 RUN git clone https://github.com/tensorflow/models.git
 Run git clone https://github.com/Danny-Dasilva/Obj_retrain.git
@@ -101,3 +101,7 @@ RUN apt-get update
 RUN apt-get install -y edgetpu-compiler
 
 WORKDIR ${work_dir}
+
+
+# cp packages/tf2/setup.py .
+# python -m pip install .

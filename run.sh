@@ -8,8 +8,13 @@ python3 generate_tfrecord.py --csv_input=images/train_labels.csv --image_dir=ima
 python3 generate_tfrecord.py --csv_input=images/test_labels.csv --image_dir=images/test --output_path=test.record
 
 
+
+
+
 python3 model_main.py \
   --pipeline_config_path=training/pipeline.config \
   --model_dir=training/ \
-  --num_train_steps=40000 \
+  --num_train_steps=10000 \
   --num_eval_steps=200
+
+
