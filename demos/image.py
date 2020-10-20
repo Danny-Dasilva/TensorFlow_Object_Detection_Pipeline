@@ -1,13 +1,11 @@
-
-######## Webcam Object Detection Using Tensorflow-trained Classifier #########
+######## Image Object Detection Using Tensorflow-trained Classifier #########
 #
 # Author: Evan Juras
-# Date: 1/20/18
+# Date: 1/15/18
 # Description: 
-# This program uses a TensorFlow-trained classifier to perform object detection.
-# It loads the classifier and uses it to perform object detection on a webcam feed.
-# It draws boxes, scores, and labels around the objects of interest in each frame
-# from the webcam.
+# This program uses a TensorFlow-trained neural network to perform object detection.
+# It loads the classifier and uses it to perform object detection on an image.
+# It draws boxes, scores, and labels around the objects of interest in the image.
 
 ## Some of the code is copied from Google's example at
 ## https://github.com/tensorflow/models/blob/master/research/object_detection/object_detection_tutorial.ipynb
@@ -16,7 +14,6 @@
 ## https://github.com/datitran/object_detector_app/blob/master/object_detection_app.py
 
 ## but I changed it to make it more understandable to me.
-
 
 # Import packages
 import os
@@ -34,6 +31,7 @@ from utils import visualization_utils as vis_util
 
 # Name of the directory containing the object detection module we're using
 MODEL_NAME = 'inference_graph'
+IMAGE_NAME = 'test1.jpg'
 
 # Grab path to current working directory
 CWD_PATH = os.getcwd()
@@ -45,10 +43,13 @@ PATH_TO_CKPT = os.path.join(CWD_PATH,MODEL_NAME,'frozen_inference_graph.pb')
 # Path to label map file
 PATH_TO_LABELS = os.path.join(CWD_PATH,'training','labelmap.pbtxt')
 
-# Number of classes the object detector can identify
-NUM_CLASSES = 3
+# Path to image
+PATH_TO_IMAGE = os.path.join(CWD_PATH,IMAGE_NAME)
 
-## Load the label map.
+# Number of classes the object detector can identify
+NUM_CLASSES = 6
+
+# Load the label map.
 # Label maps map indices to category names, so that when our convolution
 # network predicts `5`, we know that this corresponds to `king`.
 # Here we use internal utility functions, but anything that returns a
@@ -68,7 +69,6 @@ with detection_graph.as_default():
 
     sess = tf.Session(graph=detection_graph)
 
-
 # Define input and output tensors (i.e. data) for the object detection classifier
 
 # Input tensor is the image
@@ -86,43 +86,35 @@ detection_classes = detection_graph.get_tensor_by_name('detection_classes:0')
 # Number of objects detected
 num_detections = detection_graph.get_tensor_by_name('num_detections:0')
 
-# Initialize webcam feed
-video = cv2.VideoCapture(0)
-ret = video.set(3,1280)
-ret = video.set(4,720)
+# Load image using OpenCV and
+# expand image dimensions to have shape: [1, None, None, 3]
+# i.e. a single-column array, where each item in the column has the pixel RGB value
+image = cv2.imread(PATH_TO_IMAGE)
+image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+image_expanded = np.expand_dims(image_rgb, axis=0)
 
-while(True):
+# Perform the actual detection by running the model with the image as input
+(boxes, scores, classes, num) = sess.run(
+    [detection_boxes, detection_scores, detection_classes, num_detections],
+    feed_dict={image_tensor: image_expanded})
 
-    # Acquire frame and expand frame dimensions to have shape: [1, None, None, 3]
-    # i.e. a single-column array, where each item in the column has the pixel RGB value
-    ret, frame = video.read()
-    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    frame_expanded = np.expand_dims(frame_rgb, axis=0)
+# Draw the results of the detection (aka 'visulaize the results')
 
-    # Perform the actual detection by running the model with the image as input
-    (boxes, scores, classes, num) = sess.run(
-        [detection_boxes, detection_scores, detection_classes, num_detections],
-        feed_dict={image_tensor: frame_expanded})
+vis_util.visualize_boxes_and_labels_on_image_array(
+    image,
+    np.squeeze(boxes),
+    np.squeeze(classes).astype(np.int32),
+    np.squeeze(scores),
+    category_index,
+    use_normalized_coordinates=True,
+    line_thickness=8,
+    min_score_thresh=0.60)
 
-    # Draw the results of the detection (aka 'visulaize the results')
-    vis_util.visualize_boxes_and_labels_on_image_array(
-        frame,
-        np.squeeze(boxes),
-        np.squeeze(classes).astype(np.int32),
-        np.squeeze(scores),
-        category_index,
-        use_normalized_coordinates=True,
-        line_thickness=8,
-        min_score_thresh=0.60)
+# All the results have been drawn on image. Now display the image.
+cv2.imshow('Object detector', image)
 
-    # All the results have been drawn on the frame, so it's time to display it.
-    cv2.imshow('Object detector', frame)
-
-    # Press 'q' to quit
-    if cv2.waitKey(1) == ord('q'):
-        break
+# Press any key to close the image
+cv2.waitKey(0)
 
 # Clean up
-video.release()
 cv2.destroyAllWindows()
-

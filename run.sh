@@ -27,7 +27,14 @@ python generate_tfrecord_2.0.py -x images/test -l training/labelmap.pbtxt -o tes
 python3 model_main.py \
   --pipeline_config_path=training/pipeline.config \
   --model_dir=training/ \
-  --num_train_steps=10000 \
+  --num_train_steps=40000 \
   --num_eval_steps=200
 
+
+
+
+---------------------
+export inference graph
+
+python export_inference_graph.py --input_type image_tensor --pipeline_config_path training/pipeline.config --trained_checkpoint_prefix training/model.ckpt-10000 --output_directory inference_graph
 

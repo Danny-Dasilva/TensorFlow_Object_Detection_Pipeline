@@ -40,7 +40,7 @@ RUN apt-get update && apt-get upgrade -y \
 
 # tensorflow and object detection api installation
 RUN apt-get install -y protobuf-compiler python-pil python-lxml python-tk python3-pip
-RUN python -m pip install --upgrade pip setuptools && pip3 install tensorflow-gpu==1.15 scipy tf_slim
+RUN python -m pip install --upgrade pip setuptools && pip3 install tensorflow-gpu==1.15 scipy tf_slim opencv-python
 # RUN pip3 install tensorflow-gpu==2.2.0
 RUN mkdir /protoc_3.3 && \
     cd protoc_3.3 && \

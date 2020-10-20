@@ -1,13 +1,12 @@
-
-######## Webcam Object Detection Using Tensorflow-trained Classifier #########
+######## Video Object Detection Using Tensorflow-trained Classifier #########
 #
 # Author: Evan Juras
-# Date: 1/20/18
+# Date: 1/16/18
 # Description: 
 # This program uses a TensorFlow-trained classifier to perform object detection.
-# It loads the classifier and uses it to perform object detection on a webcam feed.
-# It draws boxes, scores, and labels around the objects of interest in each frame
-# from the webcam.
+# It loads the classifier and uses it to perform object detection on a video.
+# It draws boxes, scores, and labels around the objects of interest in each
+# frame of the video.
 
 ## Some of the code is copied from Google's example at
 ## https://github.com/tensorflow/models/blob/master/research/object_detection/object_detection_tutorial.ipynb
@@ -16,7 +15,6 @@
 ## https://github.com/datitran/object_detector_app/blob/master/object_detection_app.py
 
 ## but I changed it to make it more understandable to me.
-
 
 # Import packages
 import os
@@ -34,6 +32,7 @@ from utils import visualization_utils as vis_util
 
 # Name of the directory containing the object detection module we're using
 MODEL_NAME = 'inference_graph'
+VIDEO_NAME = 'test.mov'
 
 # Grab path to current working directory
 CWD_PATH = os.getcwd()
@@ -45,10 +44,13 @@ PATH_TO_CKPT = os.path.join(CWD_PATH,MODEL_NAME,'frozen_inference_graph.pb')
 # Path to label map file
 PATH_TO_LABELS = os.path.join(CWD_PATH,'training','labelmap.pbtxt')
 
-# Number of classes the object detector can identify
-NUM_CLASSES = 3
+# Path to video
+PATH_TO_VIDEO = os.path.join(CWD_PATH,VIDEO_NAME)
 
-## Load the label map.
+# Number of classes the object detector can identify
+NUM_CLASSES = 6
+
+# Load the label map.
 # Label maps map indices to category names, so that when our convolution
 # network predicts `5`, we know that this corresponds to `king`.
 # Here we use internal utility functions, but anything that returns a
@@ -68,7 +70,6 @@ with detection_graph.as_default():
 
     sess = tf.Session(graph=detection_graph)
 
-
 # Define input and output tensors (i.e. data) for the object detection classifier
 
 # Input tensor is the image
@@ -86,12 +87,10 @@ detection_classes = detection_graph.get_tensor_by_name('detection_classes:0')
 # Number of objects detected
 num_detections = detection_graph.get_tensor_by_name('num_detections:0')
 
-# Initialize webcam feed
-video = cv2.VideoCapture(0)
-ret = video.set(3,1280)
-ret = video.set(4,720)
+# Open video file
+video = cv2.VideoCapture(PATH_TO_VIDEO)
 
-while(True):
+while(video.isOpened()):
 
     # Acquire frame and expand frame dimensions to have shape: [1, None, None, 3]
     # i.e. a single-column array, where each item in the column has the pixel RGB value
@@ -125,4 +124,3 @@ while(True):
 # Clean up
 video.release()
 cv2.destroyAllWindows()
-
