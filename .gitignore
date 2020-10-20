@@ -1,0 +1,8 @@
+test/
+train/
+test_labels.csv
+train_labels.csv
+put_json-imgs_here/**/*.jpg
+put_json-imgs_here/**/*.json
+Model
+model_out
