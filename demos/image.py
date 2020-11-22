@@ -31,7 +31,7 @@ from utils import visualization_utils as vis_util
 
 # Name of the directory containing the object detection module we're using
 MODEL_NAME = 'inference_graph'
-IMAGE_NAME = 'images/demos/test1.jpg'
+IMAGE_NAME = 'images/validation/a4.jpg'
 
 # Grab path to current working directory
 CWD_PATH = os.getcwd()
@@ -90,6 +90,7 @@ num_detections = detection_graph.get_tensor_by_name('num_detections:0')
 # expand image dimensions to have shape: [1, None, None, 3]
 # i.e. a single-column array, where each item in the column has the pixel RGB value
 image = cv2.imread(PATH_TO_IMAGE)
+
 image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 image_expanded = np.expand_dims(image_rgb, axis=0)
 
@@ -107,12 +108,19 @@ vis_util.visualize_boxes_and_labels_on_image_array(
     np.squeeze(scores),
     category_index,
     use_normalized_coordinates=True,
-    line_thickness=8,
-    min_score_thresh=0.60)
+    line_thickness=30,
+    min_score_thresh=0.30)
 
 # All the results have been drawn on image. Now display the image.
+# imS = cv2.resize(image, (1024, 820))     
+
 cv2.imshow('Object detector', image)
 
+# filename = 'images/validation2.jpg'
+  
+# Using cv2.imwrite() method 
+# Saving the image 
+# cv2.imwrite(filename, imS) 
 # Press any key to close the image
 cv2.waitKey(0)
 

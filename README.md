@@ -1,5 +1,5 @@
-# TensorFlow_2_Object_Detection
-tensorflow2 object detection training pipeline
+# TensorFlow__Object_Detection Pipeline
+tensorflow object detection training pipeline
 
 
 

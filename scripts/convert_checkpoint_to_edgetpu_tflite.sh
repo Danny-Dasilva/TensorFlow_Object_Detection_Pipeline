@@ -2,8 +2,8 @@
 eval "$(cat ~/.bashrc | tail -n +10)"
 
 
-workon ${obs_venv}
-echo ${obs_venv}
+# workon ${obs_venv}
+# echo ${obs_venv}
 # Exit script on error.
 set -e
 # Echo each command, easier for debugging.
